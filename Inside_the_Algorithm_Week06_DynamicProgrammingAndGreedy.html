@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inside the Algorithm — Week 06: Dynamic Programming and Greedy Algorithms</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#182230;--muted:#667085;--line:#e4e7ec;--purple:#4f46e5;--blue:#0284c7;--green:#16803c;--orange:#b54708;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+.hero{padding:42px 18px;background:linear-gradient(125deg,#111827,#312e81 58%,#075985);color:#fff}.wrap{max-width:1060px;margin:auto}
+.eyebrow{text-transform:uppercase;font-size:12px;font-weight:900;letter-spacing:.12em;opacity:.8}h1{font-size:clamp(34px,6vw,58px);line-height:1;margin:8px 0 13px;letter-spacing:-.04em}
+.lead{font-size:18px;max-width:850px;color:#e0e7ff}.pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#ffffff17;border:1px solid #ffffff26;margin:4px 4px 0 0;font-size:13px}
+nav{position:sticky;top:0;z-index:10;background:#ffffffed;backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}nav .wrap{display:flex;gap:5px;overflow:auto;padding:9px 12px}
+nav button{white-space:nowrap;border:0;background:transparent;padding:8px 10px;border-radius:9px;font-weight:800;color:#475467;cursor:pointer}
+main{padding:20px 14px 70px}.section{background:#fff;border:1px solid var(--line);border-radius:20px;padding:clamp(19px,4vw,34px);margin:18px 0;box-shadow:0 8px 30px #10182808}
+.kicker{color:var(--purple);font-size:12px;font-weight:950;letter-spacing:.09em;text-transform:uppercase}h2{font-size:clamp(25px,4vw,38px);line-height:1.12;margin:6px 0 10px}h3{margin:24px 0 9px}
+.callout{border-left:4px solid var(--purple);background:#f8f9ff;border-radius:10px;padding:14px 16px;margin:15px 0}.note{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:14px 16px}
+.board{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:16px;padding:18px;margin:12px 0}.btns{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
+.btn{border:0;border-radius:10px;padding:11px 15px;background:var(--purple);color:#fff;font-weight:850;cursor:pointer}.btn.ghost{background:#f2f4f7;color:#344054}.btn:disabled{opacity:.4}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.mini{border:1px solid var(--line);border-radius:14px;padding:15px;background:#fcfcfd}
+.explain{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}.tag{font-size:12px;font-weight:950;text-align:center;padding:7px;border-radius:8px;background:#eef2ff;color:#3730a3}
+.explain b{display:block;margin-bottom:4px}.question{background:#eff6ff;border:1px solid #bfdbfe;border-radius:13px;padding:14px;margin:13px 0}.question button,.quiz button,.check button{margin:6px 5px 0 0;border:1px solid #cbd5e1;background:#fff;border-radius:9px;padding:9px 12px;font-weight:750;cursor:pointer}
+.quiz button,.check button{display:block;width:100%;text-align:left;margin:7px 0}.cards{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.num{min-width:58px;height:58px;padding:0 10px;border:2px solid #cbd5e1;background:#fff;border-radius:12px;display:grid;place-items:center;font-weight:900;font-size:18px}
+.num.focus{border-color:var(--purple);background:#eef2ff}.num.saved{border-color:#86efac;background:#f0fdf4}.num.reject{opacity:.25;text-decoration:line-through}.num.pick{border-color:#38bdf8;background:#e0f2fe}
+.table{width:100%;border-collapse:collapse;margin:12px 0}.table th,.table td{border:1px solid var(--line);padding:9px;text-align:center}.table th{background:#f2f4f7}
+.progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden}.progress div{height:100%;background:linear-gradient(90deg,#4f46e5,#0284c7);width:0;transition:.3s}
+.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}.metric{border:1px solid var(--line);background:#f9fafb;border-radius:11px;padding:10px}.metric b{font-size:18px;display:block}.metric span{font-size:11px;color:var(--muted)}
+.code{background:#101828;color:#e5e7eb;padding:17px;border-radius:14px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:14px;white-space:pre-wrap}.ok{color:var(--green)}.bad{color:var(--red)}.muted{color:var(--muted)}.center{text-align:center}.hidden{display:none}
+footer{text-align:center;color:#667085;padding:25px;font-size:13px}@media(max-width:620px){.explain{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+<div class="eyebrow">INF203 • Week 06 • Pembelajaran Asynchronous</div>
+<h1>Inside the Algorithm</h1>
+<p class="lead"><b>Dynamic Programming and Greedy Algorithms.</b><br>Lihat keputusan algoritma satu per satu. Pahami struktur problem terlebih dahulu, baru tentukan strategi yang tepat.</p>
+<span class="pill">Dynamic Programming</span><span class="pill">overlapping subproblems</span><span class="pill">memoization</span><span class="pill">tabulation</span><span class="pill">Greedy</span><span class="pill">local choice</span>
+</div></header>
+
+<nav><div class="wrap">
+<button onclick="go('intro')">Mulai</button><button onclick="go('dp')">DP Trace</button><button onclick="go('memo')">Memoization</button><button onclick="go('tab')">Tabulation</button><button onclick="go('greedy')">Greedy Trace</button><button onclick="go('compare')">Bandingkan</button><button onclick="go('check')">Self-Check</button><button onclick="go('lms')">Knowledge Check LMS</button>
+</div></nav>
+
+<main class="wrap">
+<section class="section" id="intro">
+<div class="kicker">0 • Dua cara berpikir</div><h2>Problem kecil dulu: hitung banyak cara mencapai anak tangga.</h2>
+<p>Anda berada di bawah tangga. Setiap langkah boleh naik <b>1 atau 2 anak tangga</b>. Berapa banyak cara untuk mencapai tangga ke-4?</p>
+<div class="board center"><div class="cards"><div class="num">0</div><div class="num">1</div><div class="num">2</div><div class="num">3</div><div class="num focus">4</div></div></div>
+<div class="question"><b>Pikirkan:</b> untuk sampai ke tangga 4, posisi terakhir sebelumnya hanya mungkin dari mana?
+<button onclick="intro(true)">Tangga 3 atau 2</button><button onclick="intro(false)">Tangga 1 saja</button><button onclick="intro(false)">Harus langsung ke 4</button><div id="ifb"></div></div>
+<div class="callout hidden" id="ireveal"><b>Benar.</b> Cara mencapai tangga 4 bergantung pada solusi problem yang lebih kecil: cara mencapai tangga 3 dan tangga 2. Sekarang kita lihat apa yang terjadi jika subproblem yang sama muncul berulang kali.</div>
+</section>
+
+<section class="section" id="dp">
+<div class="kicker">1 • Dynamic Programming micro-step</div><h2>SOLVE → STORE → REUSE</h2>
+<p>Kita gunakan contoh Fibonacci kecil karena pola subproblem-nya mudah dilihat. Tujuan kita bukan menghafal Fibonacci, tetapi melihat <b>overlapping subproblems</b>.</p>
+<div class="progress"><div id="dpProg"></div></div>
+<div class="status"><div class="metric"><b id="dpNo">0</b><span>Langkah</span></div><div class="metric"><b id="dpAction">MULAI</b><span>Aksi</span></div><div class="metric"><b id="dpSaved">0</b><span>Hasil tersimpan</span></div></div>
+<div class="board" id="dpBoard"></div>
+<div class="explain"><div class="tag" id="dpTag">MULAI</div><div><b id="dpTitle"></b><span id="dpText"></span></div></div>
+<div class="btns"><button class="btn" id="dpNext" onclick="dpNext()">Langkah Berikutnya →</button><button class="btn ghost" onclick="dpReset()">Mulai Ulang</button></div>
+</section>
+
+<section class="section" id="memo">
+<div class="kicker">2 • Memoization</div><h2>“Sudah pernah dihitung? Jangan hitung lagi.”</h2>
+<p><b>Memoization</b> biasanya bekerja secara top-down: mulai dari problem yang dibutuhkan, lalu menyimpan hasil subproblem ketika pertama kali dihitung.</p>
+<div class="board">
+<table class="table"><thead><tr><th>Subproblem</th><th>Hasil tersimpan</th><th>Status</th></tr></thead><tbody id="memoBody"><tr><td>fib(2)</td><td>?</td><td>Belum dihitung</td></tr><tr><td>fib(3)</td><td>?</td><td>Belum dihitung</td></tr><tr><td>fib(4)</td><td>?</td><td>Belum dihitung</td></tr></tbody></table>
+</div>
+<div class="question"><b>Jika fib(2) sudah pernah dihitung dan hasilnya 1, apa yang sebaiknya dilakukan ketika fib(2) dibutuhkan lagi?</b>
+<button onclick="memoAns(true)">Ambil hasil yang tersimpan</button><button onclick="memoAns(false)">Hitung ulang dari awal</button><div id="mfb"></div></div>
+<div class="callout"><b>Inti memoization:</b> computation yang mahal tidak perlu diulang untuk subproblem yang sama. <b>Solve once → store → reuse.</b></div>
+</section>
+
+<section class="section" id="tab">
+<div class="kicker">3 • Tabulation</div><h2>Bangun solusi dari bawah ke atas.</h2>
+<p><b>Tabulation</b> biasanya bersifat bottom-up. Kita mengisi solusi kecil terlebih dahulu, lalu menggunakannya untuk membangun solusi yang lebih besar.</p>
+<div class="board"><div class="cards" id="tabCards"></div></div>
+<div class="explain"><div class="tag">BOTTOM-UP</div><div><b id="tabTitle">Mulai dari base values</b><span id="tabText">Kita mengetahui fib(0)=0 dan fib(1)=1.</span></div></div>
+<div class="btns"><button class="btn" onclick="tabNext()">Isi Nilai Berikutnya →</button><button class="btn ghost" onclick="tabReset()">Ulangi</button></div>
+<div class="callout"><b>Memoization vs Tabulation:</b> keduanya menyimpan hasil subproblem. Perbedaannya terutama pada arah perhitungan: memoization lazimnya <b>top-down</b>, tabulation <b>bottom-up</b>.</div>
+</section>
+
+<section class="section" id="greedy">
+<div class="kicker">4 • Greedy micro-step</div><h2>Local choice: pilih keputusan terbaik saat ini.</h2>
+<p>Bayangkan Anda harus memilih aktivitas sebanyak mungkin tanpa jadwal bertabrakan. Strategi Greedy yang tepat untuk problem ini adalah memilih aktivitas yang <b>selesai paling awal</b>, lalu mempertimbangkan aktivitas berikutnya yang masih kompatibel.</p>
+<div class="board">
+<table class="table"><thead><tr><th>Aktivitas</th><th>Mulai</th><th>Selesai</th><th>Status</th></tr></thead><tbody id="gBody"></tbody></table>
+</div>
+<div class="status"><div class="metric"><b id="gStep">0</b><span>Langkah</span></div><div class="metric"><b id="gCount">0</b><span>Dipilih</span></div><div class="metric"><b id="gFinish">—</b><span>Finish terakhir</span></div></div>
+<div class="explain"><div class="tag">GREEDY</div><div><b id="gTitle">Belum ada pilihan</b><span id="gText">Pada setiap langkah, kita membuat local choice berdasarkan aturan Greedy.</span></div></div>
+<div class="btns"><button class="btn" id="gNext" onclick="gNext()">Evaluasi Kandidat Berikutnya →</button><button class="btn ghost" onclick="gReset()">Mulai Ulang</button></div>
+<div class="note"><b>Penting:</b> Greedy tidak berarti “asal memilih yang terlihat bagus”. Kita memerlukan alasan bahwa aturan local choice tersebut sesuai dengan struktur problem. Pada problem lain, local choice dapat menghasilkan solusi yang tidak optimal.</div>
+</section>
+
+<section class="section" id="compare">
+<div class="kicker">5 • Pilih strategi berdasarkan struktur problem</div><h2>Dynamic Programming atau Greedy?</h2>
+<div class="grid">
+<div class="mini"><h3>Dynamic Programming</h3><p>Perhatikan apakah problem dapat dipecah menjadi subproblem dan apakah subproblem yang sama muncul berulang. Hasil subproblem dapat <b>disimpan dan digunakan kembali</b>.</p><p><b>Pola:</b> Solve → Store → Reuse.</p></div>
+<div class="mini"><h3>Greedy</h3><p>Pada setiap langkah, algoritma membuat <b>local choice</b> dan melanjutkan tanpa mengeksplorasi kembali semua keputusan sebelumnya.</p><p><b>Pola:</b> Evaluate → Choose → Commit.</p></div>
+</div>
+<div class="question"><b>Skenario:</b> subproblem yang sama terus muncul dan menghitungnya berulang kali membuang waktu. Strategi apa yang patut dipertimbangkan?
+<button onclick="cmp(true,'DP')">Dynamic Programming</button><button onclick="cmp(false,'Greedy')">Greedy</button><div id="cfb"></div></div>
+<div class="question"><b>Skenario:</b> sebuah problem memiliki aturan local choice yang dapat dibuktikan tetap mengarah ke solusi optimal. Strategi apa yang patut dipertimbangkan?
+<button onclick="cmp(true,'Greedy')">Greedy</button><button onclick="cmp(false,'DP')">Dynamic Programming</button><div id="cfb2"></div></div>
+<div class="callout"><b>Pesan utama Week 06:</b> jangan memilih algoritma hanya karena nama atau sintaksnya familiar. <b>Recognize the problem structure before choosing the algorithmic strategy.</b></div>
+</section>
+
+<section class="section" id="check">
+<div class="kicker">6 • Self-check sebelum quiz LMS</div><h2>Bisakah Anda menjelaskan “mengapa”?</h2>
+<div class="quiz">
+<p><b>1. Apa yang dimaksud overlapping subproblems?</b></p>
+<button onclick="q(1,true)">Subproblem yang sama muncul dan perlu diselesaikan berulang dalam proses penyelesaian problem.</button><button onclick="q(1,false)">Semua subproblem selalu berbeda.</button><div id="q1"></div>
+<p><b>2. Mengapa DP menyimpan hasil subproblem?</b></p>
+<button onclick="q(2,false)">Agar kode terlihat lebih panjang.</button><button onclick="q(2,true)">Agar hasil yang sudah dihitung dapat digunakan kembali tanpa computation yang sama.</button><div id="q2"></div>
+<p><b>3. Apa perbedaan sederhana memoization dan tabulation?</b></p>
+<button onclick="q(3,true)">Memoization lazimnya top-down; tabulation bottom-up.</button><button onclick="q(3,false)">Memoization adalah Greedy, tabulation adalah recursion.</button><div id="q3"></div>
+<p><b>4. Apa arti local choice pada Greedy?</b></p>
+<button onclick="q(4,true)">Memilih opsi yang dianggap terbaik pada langkah saat ini berdasarkan aturan Greedy.</button><button onclick="q(4,false)">Mencoba semua kemungkinan lalu memilih di akhir.</button><div id="q4"></div>
+<p><b>5. Apakah Greedy selalu menghasilkan solusi optimal?</b></p>
+<button onclick="q(5,false)">Ya, selama memilih nilai terbesar/terkecil.</button><button onclick="q(5,true)">Tidak. Keberhasilannya bergantung pada struktur problem dan validitas greedy-choice property.</button><div id="q5"></div>
+</div>
+</section>
+
+<section class="section" id="lms">
+<div class="kicker">7 • Evaluasi Week 06</div><h2>Knowledge Check — Dynamic Programming and Greedy Algorithms</h2>
+<div class="note"><b>Halaman interaktif ini adalah media belajar dan self-check.</b> Nilai Week 06 diperoleh melalui Knowledge Check yang tersedia di LMS sesuai instruksi dosen.</div>
+<p>Setelah menyelesaikan seluruh aktivitas di atas, kembali ke LMS. Knowledge Check mencakup:</p>
+<div class="grid">
+<div class="mini">Konsep dasar <b>Dynamic Programming</b></div><div class="mini"><b>Subproblem</b> dan overlapping subproblems</div><div class="mini">Penyimpanan dan penggunaan kembali hasil</div><div class="mini"><b>Memoization</b> dan <b>tabulation</b></div><div class="mini">Prinsip <b>Greedy</b> dan local choice</div><div class="mini">Perbedaan DP dan Greedy</div><div class="mini">Pemilihan strategi berdasarkan karakteristik problem</div><div class="mini">Analisis sederhana cara kerja algoritma</div>
+</div>
+<h3>📌 Quiz Information</h3>
+<div class="status"><div class="metric"><b>10</b><span>Questions</span></div><div class="metric"><b>15 min</b><span>Time limit</span></div><div class="metric"><b>2</b><span>Attempts</span></div><div class="metric"><b>Highest</b><span>Grading method</span></div></div>
+<div class="callout"><b>Focus:</b> Jangan hanya menghafal definisi. Gunakan karakteristik problem untuk menjelaskan <b>mengapa suatu strategi dapat atau tidak dapat digunakan.</b></div>
+<div class="check">
+<button onclick="tick(this)">☐ Saya dapat menjelaskan overlapping subproblems.</button>
+<button onclick="tick(this)">☐ Saya memahami pola Solve → Store → Reuse.</button>
+<button onclick="tick(this)">☐ Saya dapat membedakan memoization dan tabulation.</button>
+<button onclick="tick(this)">☐ Saya memahami local choice pada Greedy.</button>
+<button onclick="tick(this)">☐ Saya dapat membedakan kapan DP dan Greedy patut dipertimbangkan.</button>
+<button onclick="tick(this)">☐ Saya siap mengerjakan Knowledge Check di LMS.</button>
+</div>
+</section>
+</main>
+<footer>INF203 • Week 06 • Dynamic Programming and Greedy Algorithms<br>Interactive learning → self-check → Knowledge Check LMS.</footer>
+
+<script>
+function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+function intro(ok){document.getElementById('ifb').innerHTML=ok?'<p class="ok"><b>Benar ✓</b> Posisi terakhir sebelum tangga 4 dapat berasal dari 3 (naik 1) atau 2 (naik 2).</p>':'<p class="bad">Belum tepat. Ingat: satu langkah boleh naik 1 atau 2 anak tangga.</p>';if(ok)document.getElementById('ireveal').classList.remove('hidden')}
+
+const ds=[
+['MULAI',0,'<p class="center"><b>Kita ingin menghitung fib(4).</b></p><div class="cards"><div class="num focus">fib(4)</div></div>','Problem awal','fib(4) membutuhkan hasil problem yang lebih kecil.'],
+['SUBPROBLEM',0,'<div class="cards"><div class="num focus">fib(3)</div><div class="num focus">fib(2)</div></div>','Pecah kebutuhan','fib(4) bergantung pada fib(3) dan fib(2).'],
+['EXPAND',0,'<div class="cards"><div class="num">fib(2)</div><div class="num">fib(1)</div><div class="num focus">fib(2)</div></div>','Ada sesuatu yang berulang','Saat fib(3) diuraikan, fib(2) muncul. Tetapi fib(2) juga dibutuhkan langsung oleh fib(4). Subproblem yang sama muncul lebih dari sekali.'],
+['NOTICE',0,'<p class="center"><b>fib(2) muncul lagi!</b></p><div class="cards"><div class="num focus">fib(2)</div><div class="num focus">fib(2)</div></div>','Overlapping subproblems','Jika setiap kemunculan fib(2) dihitung ulang dari awal, kita mengulang pekerjaan yang sama.'],
+['SOLVE',1,'<div class="cards"><div class="num saved">fib(2) = 1</div></div>','SOLVE','Hitung fib(2) sekali. Hasilnya 1.'],
+['STORE',1,'<div class="cards"><div class="num saved">cache[2] = 1</div></div>','STORE','Simpan hasil fib(2). Sekarang algoritma memiliki catatan yang dapat digunakan lagi.'],
+['REUSE',1,'<div class="cards"><div class="num pick">butuh fib(2)</div><span style="align-self:center">→</span><div class="num saved">ambil 1</div></div>','REUSE','Ketika fib(2) dibutuhkan lagi, tidak perlu menghitung ulang. Ambil hasil yang sudah tersimpan.'],
+['KESIMPULAN',3,'<p class="center" style="font-size:24px"><b>SOLVE → STORE → REUSE</b></p>','Inilah ide penting DP','Dynamic Programming berguna ketika struktur problem memungkinkan solusi dibangun dari subproblem dan hasil subproblem dapat dimanfaatkan kembali.']
+];let di=0;
+function showDP(){let s=ds[di];document.getElementById('dpNo').textContent=di;document.getElementById('dpAction').textContent=s[0];document.getElementById('dpSaved').textContent=s[1];document.getElementById('dpBoard').innerHTML=s[2];document.getElementById('dpTag').textContent=s[0];document.getElementById('dpTitle').textContent=s[3];document.getElementById('dpText').textContent=s[4];document.getElementById('dpProg').style.width=(di/(ds.length-1)*100)+'%';document.getElementById('dpNext').disabled=di===ds.length-1}
+function dpNext(){if(di<ds.length-1){di++;showDP()}}function dpReset(){di=0;showDP()}showDP();
+
+function memoAns(ok){document.getElementById('mfb').innerHTML=ok?'<p class="ok"><b>Benar ✓</b> Inilah reuse. Hasil subproblem tidak dihitung lagi.</p>':'<p class="bad">Belum tepat. Jika hasil sudah tersedia, menghitung ulang justru membuang computation.</p>';if(ok)document.getElementById('memoBody').innerHTML='<tr><td>fib(2)</td><td><b>1</b></td><td class="ok">Tersimpan ✓</td></tr><tr><td>fib(3)</td><td>?</td><td>Belum dihitung</td></tr><tr><td>fib(4)</td><td>?</td><td>Belum dihitung</td></tr>'}
+
+let ti=1;const vals=[0,1,1,2,3,5];
+function drawTab(){document.getElementById('tabCards').innerHTML=vals.map((v,i)=>`<div class="num ${i<=ti?'saved':''}">f(${i})=${i<=ti?v:'?'}</div>`).join('')}
+function tabNext(){if(ti<5){ti++;document.getElementById('tabTitle').textContent=`Hitung f(${ti}) dari hasil sebelumnya`;document.getElementById('tabText').textContent=`f(${ti}) = f(${ti-1}) + f(${ti-2}) = ${vals[ti-1]} + ${vals[ti-2]} = ${vals[ti]}. Nilai baru disimpan di table.`;drawTab()}}
+function tabReset(){ti=1;document.getElementById('tabTitle').textContent='Mulai dari base values';document.getElementById('tabText').textContent='Kita mengetahui fib(0)=0 dan fib(1)=1.';drawTab()}drawTab();
+
+const acts=[['A',1,3],['B',2,5],['C',4,6],['D',6,7],['E',5,9],['F',8,10]];let gi=0,last=0,selected=[];
+function drawG(){document.getElementById('gBody').innerHTML=acts.map((a,i)=>{let st=i>=gi?'Belum dievaluasi':selected.includes(a[0])?'<span class="ok">Dipilih ✓</span>':'<span class="bad">Ditolak</span>';return `<tr><td>${a[0]}</td><td>${a[1]}</td><td>${a[2]}</td><td>${st}</td></tr>`}).join('');document.getElementById('gStep').textContent=gi;document.getElementById('gCount').textContent=selected.length;document.getElementById('gFinish').textContent=last||'—';document.getElementById('gNext').disabled=gi===acts.length}
+function gNext(){if(gi>=acts.length)return;let a=acts[gi];if(a[1]>=last){selected.push(a[0]);last=a[2];document.getElementById('gTitle').textContent=`Pilih aktivitas ${a[0]}`;document.getElementById('gText').innerHTML=`Aktivitas ${a[0]} mulai pada ${a[1]}, tidak bertabrakan dengan aktivitas yang sudah dipilih, dan merupakan kandidat berikutnya berdasarkan urutan finish time. <b>Commit.</b>`}else{document.getElementById('gTitle').textContent=`Tolak aktivitas ${a[0]}`;document.getElementById('gText').innerHTML=`Aktivitas ${a[0]} mulai pada ${a[1]}, sebelum aktivitas terpilih terakhir selesai pada ${last}. Jadi terjadi konflik dan kandidat dilewati.`}gi++;drawG()}
+function gReset(){gi=0;last=0;selected=[];document.getElementById('gTitle').textContent='Belum ada pilihan';document.getElementById('gText').textContent='Pada setiap langkah, kita membuat local choice berdasarkan aturan Greedy.';drawG()}gReset();
+
+function cmp(ok,type){let id=type==='DP'?'cfb':'cfb2';document.getElementById(id).innerHTML=ok?'<p class="ok"><b>Benar ✓</b> Pilihan strategi didasarkan pada karakteristik problem.</p>':'<p class="bad">Belum tepat. Perhatikan kembali karakteristik problem yang disebutkan.</p>'}
+function q(n,ok){document.getElementById('q'+n).innerHTML=ok?'<p class="ok"><b>Benar ✓</b></p>':'<p class="bad"><b>Belum tepat.</b> Kembali ke bagian terkait dan perhatikan alasan di balik strateginya.</p>'}
+function tick(el){let c=el.textContent.trim().startsWith('☑');el.textContent=(c?'☐':'☑')+el.textContent.trim().slice(1);el.style.background=c?'#fff':'#f0fdf4';el.style.borderColor=c?'var(--line)':'#86efac'}
+</script>
+</body></html>
